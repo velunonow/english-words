@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.egg-info/
+.venv/
+.pytest_cache/
+build/
+
+# Secrets: put your API key in .env, never commit it
+.env
+
+# Obsidian per-device state
+.obsidian/workspace*.json
+.obsidian/cache
+.trash/
