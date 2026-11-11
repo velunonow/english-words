@@ -60,11 +60,16 @@ class LLMMatcher(SenseMatcher):
 
 
 def build_prompt(word: str, sentence: str, senses: list[Sense], requirements: str, want_examples: int) -> str:
+    context = (
+        f'The learner met it in this sentence: "{sentence}"'
+        if sentence
+        else "The learner has no sentence of their own yet; choose the most common modern sense."
+    )
     sense_list = "\n".join(f"{i}. ({s.part_of_speech}) {s.definition}" for i, s in enumerate(senses, 1))
     return f"""You help a learner keep an English vocabulary notebook.
 
 Word: {word}
-The learner met it in this sentence: "{sentence}"
+{context}
 
 Dictionary senses:
 {sense_list or "(the dictionary has no entry for this word)"}
@@ -73,8 +78,8 @@ The learner's requirements for example sentences:
 {requirements or "(none)"}
 
 Reply with only a JSON object, no other text:
-{{"sense": <number of the sense above that matches the learner's sentence, or 0 if none fits>,
-  "definition": "<a short, plain definition of the word as used in the learner's sentence>",
+{{"sense": <number of the sense above that matches the learner's sentence (or the most common modern sense), or 0 if none fits>,
+  "definition": "<a short, plain definition of the word in that sense>",
   "examples": [<exactly {want_examples} new example sentences that use the word in that same sense and follow the requirements>]}}"""
 
 

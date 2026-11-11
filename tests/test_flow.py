@@ -127,3 +127,17 @@ def test_parse_entries():
         {"definition": "d1", "example": "e1"}, {"definition": "d2"}]}]}]
     senses = parse_entries(data)
     assert [(s.part_of_speech, s.definition, s.examples) for s in senses] == [("noun", "d1", ["e1"]), ("noun", "d2", [])]
+
+
+def test_add_without_a_sentence_then_add_one_later(tmp_path):
+    vault = Vault(tmp_path)
+    path, created = add_word(vault, "bank", None, None, DAY, NoLLM(), fake_lookup)
+    assert created and Note.load(path).section_items("My sentences") == []
+
+    review = morning_review(vault, DAY + timedelta(days=1))
+    assert "> I deposited money at the bank." in Note.load(review.path).body  # dictionary example as the cue
+
+    add_word(vault, "bank", "Mine at last.", None, DAY, NoLLM(), fake_lookup)
+    note = Note.load(path)
+    assert note.section_items("My sentences")[0].startswith("Mine at last.")
+    assert "_(none yet)_" not in note.body

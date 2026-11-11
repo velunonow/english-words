@@ -37,18 +37,19 @@ def add_word(
     if not word:
         raise AddError("Give a word.")
 
-    if not sentence:
-        if not source:
-            raise AddError("Give the sentence where you saw the word (--sentence), or a link (--source).")
+    if not sentence and source:
         sentence = sources.find_sentence(fetch_text(source), word)
         if not sentence:
             raise AddError(f"Couldn't find '{word}' on that page. Pass the sentence with --sentence.")
 
-    my_line = format_sentence(sentence, source, today)
+    # A sentence of your own is best, but a word can also be added without one.
+    my_line = format_sentence(sentence, source, today) if sentence else None
     path = word_path(vault.words_dir, word)
 
     # Seen it before: keep the review schedule, just add the new sentence.
     if path.exists():
+        if not my_line:
+            raise AddError(f"'{word}' is already in your vault. Add a sentence with --sentence.")
         note = Note.load(path)
         note.append_to_section(MY_SENTENCES, f"- {my_line}")
         note.save()
@@ -61,7 +62,7 @@ def add_word(
         senses = []
 
     match = matcher.match(
-        word, sentence, senses, vault.requirements(), want_examples=EXAMPLES_WANTED
+        word, sentence or "", senses, vault.requirements(), want_examples=EXAMPLES_WANTED
     )
 
     if match.sense_index is not None:

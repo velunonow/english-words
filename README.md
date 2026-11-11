@@ -28,6 +28,7 @@ Then open this folder as a vault in Obsidian.
 vocab add serendipity --sentence "Meeting her there was pure serendipity."
 vocab add serendipity --source https://example.com/article     # finds the sentence on the page
 vocab add serendipity -s "..." -u https://example.com/article  # both
+vocab add serendipity                                   # no sentence yet: dictionary examples only
 ```
 
 Adding a word you already have just adds the new sentence to its note and keeps its schedule.

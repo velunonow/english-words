@@ -93,12 +93,17 @@ def render_review(today: date, words: list[Note]) -> Note:
         answer += [f"> - {s}" for s in mine[1:]]  # your other sentences, if any
         parts.append(
             f"## {word}\n"
-            f"> {mine[0] if mine else '(no sentence yet)'}\n\n"
+            f"> {mine[0] if mine else _cue(examples)}\n\n"
             f"> [!note]- Meaning and examples\n" + "\n".join(answer) + "\n\n"
             "- [ ] again\n- [ ] hard\n- [ ] good\n- [ ] easy\n\n"
             f"Note: [[{word}]]\n"
         )
     return Note(Path(), {"date": today, "applied": False}, "\n".join(parts))
+
+
+def _cue(examples: list[str]) -> str:
+    """With no sentence of your own, cue the word with a dictionary example."""
+    return examples[0] if examples else "(no sentence yet)"
 
 
 def morning_review(vault: Vault, today: date, force: bool = False) -> ReviewResult:

@@ -18,7 +18,7 @@ def main(argv: list[str] | None = None) -> int:
 
     add = sub.add_parser("add", help="add a word with the sentence where you saw it")
     add.add_argument("word")
-    add.add_argument("-s", "--sentence", help="the sentence where you met the word")
+    add.add_argument("-s", "--sentence", help="the sentence where you met the word (recommended)")
     add.add_argument("-u", "--source", help="link to where you saw it (used to find the sentence if none is given)")
 
     review = sub.add_parser("review", help="apply your ticks and write today's review note")

@@ -64,7 +64,7 @@ class Note:
 
     def save(self) -> None:
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        front = yaml.safe_dump(self.meta, sort_keys=False, allow_unicode=True).strip()
+        front = yaml.safe_dump(self.meta, sort_keys=False, allow_unicode=True, width=10_000).strip()
         self.path.write_text(f"---\n{front}\n---\n{self.body}", encoding="utf-8")
 
     # --- sections -----------------------------------------------------------
@@ -87,7 +87,10 @@ class Note:
         insert_at = end
         while insert_at > start + 1 and not lines[insert_at - 1].strip():
             insert_at -= 1
-        lines.insert(insert_at, line)
+        if insert_at == start + 2 and lines[start + 1].startswith("_("):
+            lines[start + 1] = line  # replace a "_(none yet)_" placeholder
+        else:
+            lines.insert(insert_at, line)
         self.body = "\n".join(lines) + "\n"
 
 
@@ -130,7 +133,7 @@ def new_word_note(
     word: str,
     part_of_speech: str,
     meaning: str,
-    my_sentence: str,
+    my_sentence: str | None,
     examples: list[str],
     added: date,
     state: ReviewState,
@@ -148,7 +151,7 @@ def new_word_note(
     body = (
         f"# {word}\n\n"
         f"{headline}\n\n"
-        f"## {MY_SENTENCES}\n- {my_sentence}\n\n"
+        f"## {MY_SENTENCES}\n{f'- {my_sentence}' if my_sentence else '_(none yet)_'}\n\n"
         f"## {EXAMPLES}\n{example_lines}\n\n"
         f"## {REVIEW_LOG}\n"
     )
